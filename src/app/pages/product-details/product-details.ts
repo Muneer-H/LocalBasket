@@ -1,9 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Product } from '../types/types';
-import { Products as ProductService } from '../services/products';
+import { Product } from '../../types/types';
+import { Products as ProductService } from '../../services/products';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Store } from '@ngrx/store';
+import * as Actions from './../../store/app.actions'
 
 @Component({
   selector: 'app-product-details',
@@ -12,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrl: './product-details.scss',
 })
 export class ProductDetails {
+  store = inject(Store)
   snackbar = inject(MatSnackBar);
   private productService = inject(ProductService);
   private activatedRoute = inject(ActivatedRoute);
@@ -46,7 +49,7 @@ export class ProductDetails {
 
   addToCart() {
     if (this.currentProduct()) {
-      this.productService.addToCart(this.currentProduct()!.id, this.itemCount());
+      this.store.dispatch(Actions.addToCart({productId: this.currentProduct()!.id, quantity: this.itemCount()}))
       this.snackbar.open('Item added to cart!', 'Success', {
         duration: 5000,
         horizontalPosition: 'right',
@@ -57,7 +60,7 @@ export class ProductDetails {
   }
   removeFromCart() {
     if (this.currentProduct()) {
-      this.productService.removeFromCart(this.currentProduct()!.id);
+      this.store.dispatch(Actions.removeFromCart({productId: this.currentProduct()!.id}))
       this.snackbar.open('Item removed from cart!', 'Success', {
         duration: 5000,
         horizontalPosition: 'right',

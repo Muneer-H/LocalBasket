@@ -2,12 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { CartProduct, Product } from '../types/types';
+import { Store } from '@ngrx/store';
+import { selectProducts } from '../store/app.selectors';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class Products {
   http = inject(HttpClient);
+  store = inject(Store);
+  productsState = this.store.select(selectProducts);
   private products: BehaviorSubject<Product[]> = new BehaviorSubject<Product[]>([]);
   products$: Observable<Product[]> = this.products.asObservable();
 
@@ -24,57 +29,13 @@ export class Products {
   getProducts(): Observable<Array<Product>> {
     return this.products$;
   }
-
-
-  addProduct(item: Product){
-    const current = this.products.getValue();
-    const updated = [...current, item];
-    this.products.next(updated);
-  }
-
+   
   getProductByID(id: string): Observable<Product | undefined> {
-    let product = this.products$.pipe(
+    let product = this.productsState.pipe(
       filter(products => products.length > 0),
       map(products => products.find(p => p.id == id))
     )
     console.log(product)
     return product
   }
-
-  updateProduct(updatedProduct: Product): void {
-    const currentProducts = this.products.getValue();
-    const index = currentProducts.findIndex(p => p.id === updatedProduct.id);
-    if (index !== -1) {
-      currentProducts[index] = updatedProduct;
-      this.products.next([...currentProducts]);
-    }
-  }
-
-  getCartItems(): Observable<Array<CartProduct>> {
-    return this.cartItems$;
-  }
-
-  addToCart(productID: string, quantity: number = 1): void {
-    this.getProductByID(productID).subscribe(product => {
-      if (product) {
-        product.inCart = true;
-        const cartItem: CartProduct = {
-          ...product,
-          quantity
-        };
-        const currentCart = this.cartItems.getValue();
-        this.cartItems.next([...currentCart, cartItem]);
-      }
-    }); 
-  }
-
-  removeFromCart(productID: string): void {
-    const currentCart = this.cartItems.getValue();
-    const updatedCart = currentCart.filter(item => item.id !== productID);
-    this.getProductByID(productID).subscribe(product => {
-      product!.inCart = false;
-    });
-    this.cartItems.next(updatedCart);
-  }
-
 }

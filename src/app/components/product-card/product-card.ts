@@ -1,11 +1,12 @@
 import { Component, inject, Input } from '@angular/core';
 import { Product } from '../../types/types';
 import { RouterLink } from "@angular/router";
-import { Products as ProductsService } from '../../services/products';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateModal } from '../update-modal/update-modal';
+import * as Actions from './../../store/app.actions'
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-product-card',
@@ -14,13 +15,13 @@ import { UpdateModal } from '../update-modal/update-modal';
   styleUrl: './product-card.scss'
 })
 export class ProductCard {
+  store = inject(Store)
   dialog = inject(MatDialog);
-  productService = inject(ProductsService);
   snackbar = inject(MatSnackBar);
   @Input() product!: Product;
 
   addToCart(){
-    this.productService.addToCart(this.product.id);
+    this.store.dispatch(Actions.addToCart({productId: this.product.id, quantity: 1}))
     this.snackbar.open("Item added to cart!", 'Success', {
       duration: 5000,
       horizontalPosition: 'right',
@@ -29,7 +30,7 @@ export class ProductCard {
     });
   }
   removeFromCart(){
-    this.productService.removeFromCart(this.product.id);
+    this.store.dispatch(Actions.removeFromCart({productId: this.product.id}))
     this.snackbar.open("Item removed from cart!", 'Success', {
       duration: 5000,
       horizontalPosition: 'right',

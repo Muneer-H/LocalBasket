@@ -16,17 +16,18 @@ import { routes } from './app/app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { provideStore } from '@ngrx/store';
+import { appReducer } from './app/store/app.reducer';
 
 const appConfig: ApplicationConfig = {
   providers: [
-    importProvidersFrom(
-      LucideAngularModule.pick({ Search, Store, Plus, Star, ShoppingCart, CircleX, Pencil })
-    ),
+    importProvidersFrom(LucideAngularModule.pick({ Search, Store, Plus, Star, ShoppingCart, CircleX, Pencil })),
     provideRouter(routes),
     provideHttpClient(),
     importProvidersFrom(MatSnackBarModule),
     importProvidersFrom(MatDialogModule),
-  ],
+    provideStore({app: appReducer})
+],
 };
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));

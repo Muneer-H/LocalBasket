@@ -1,0 +1,26 @@
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { Product } from '../../types/types';
+import { LucideAngularModule } from 'lucide-angular';
+import { ProductCard } from '../../components/product-card/product-card';
+import { RouterLink } from '@angular/router';
+import { PageHeading } from '../../components/page-heading/page-heading';
+import { Store } from '@ngrx/store';
+import { selectProducts } from '../../store/app.selectors';
+
+@Component({
+  selector: 'app-products',
+  imports: [LucideAngularModule, ProductCard, RouterLink, PageHeading],
+  templateUrl: './products.html',
+  styleUrl: './products.scss',
+})
+export class Products implements OnInit {
+  store = inject(Store);
+  productsState = this.store.select(selectProducts);
+  data = signal<Array<Product>>([]);
+  ngOnInit(): void {
+      this.productsState.subscribe(products => {
+        this.data.set(products);
+      });
+  }
+  
+}

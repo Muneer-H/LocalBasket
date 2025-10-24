@@ -2,6 +2,8 @@ import { Component, inject, NgModule, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { Products as ProductsService } from '../../services/products';
+import { Store } from '@ngrx/store';
+import { selectCartItemsCount } from '../../store/app.selectors';
 
 @Component({
   selector: 'app-header',
@@ -11,11 +13,12 @@ import { Products as ProductsService } from '../../services/products';
   styleUrl: './header.scss',
 })
 export class Header {
+  store = inject(Store);
   cartItemsCount = signal<number>(0);
-  productService = inject(ProductsService);
+  itemCountNgrx = this.store.select(selectCartItemsCount)
   constructor() {
-    this.productService.getCartItems().subscribe((items) => {
-      this.cartItemsCount.set(items.length);
+    this.itemCountNgrx.subscribe(count => {
+      this.cartItemsCount.set(count);
     });
   }
 }

@@ -1,10 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { PageHeading } from '../components/page-heading/page-heading';
+import { PageHeading } from '../../components/page-heading/page-heading';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Product } from '../types/types';
-import { Products as ProductService } from '../services/products';
+import { Product } from '../../types/types';
+import { Products as ProductService } from '../../services/products';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Store } from '@ngrx/store';
+import * as Actions from './../../store/app.actions'
 
 
 @Component({
@@ -14,6 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrl: './add-item.scss',
 })
 export class AddItem {
+  store = inject(Store)
   snackBar = inject(MatSnackBar);
   private router: Router = inject(Router);
   productService = inject(ProductService);
@@ -49,7 +52,7 @@ export class AddItem {
         });
     }
     else{
-      this.productService.addProduct(newItem);
+      this.store.dispatch(Actions.addProduct({product: newItem}))
       this.router.navigate(['/products']);
       this.snackBar.open("Item added successfully!", 'Success', {
         duration: 5000,
