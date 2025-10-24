@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "itemName": "Bananas (1 Bunch)",
+    "price": 1.29,
+    "rating": 4.7,
+    "image": "https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fill,g_center,w_730,h_913/k%2Farchive%2Fc3a07ee741413dfe501f85a2ebca0da83f0c5f65",
+    "category": "Fruit",
+    "inStock": true,
+    "shortDescription": "A fresh bunch of ripe yellow bananas.",
+    "detailDescription": "Sweet and nutritious bananas, perfect for breakfast or snacks. High in potassium and great for a healthy diet. Best stored at room temperature until fully ripe, then consume or refrigerate.",
+    "inCart": false
+  },
+  {
+    "id": 2,
+    "itemName": "Whole Milk (1 L)",
+    "price": 2.49,
+    "rating": 4.5,
+    "image": "https://www.wcolemanandson.co.uk/images/products/organic-whole-milk-main.jpg",
+    "category": "Dairy",
+    "inStock": true,
+    "shortDescription": "Creamy whole milk in a 1 litre bottle.",
+    "detailDescription": "Rich and creamy whole milk, suitable for daily use in cereals, cooking, or drinking. Pasteurised for safety, retains full fat for flavour. Keep refrigerated and use by the printed date.",
+    "inCart": false
+  },
+  {
+    "id": 3,
+    "itemName": "Brown Rice (2 lb Bag)",
+    "price": 3.99,
+    "rating": 4.3,
+    "image": "https://i5.walmartimages.com/seo/Mahatma-Organic-100-Whole-Grain-Brown-Rice-2-lb-Bag_ae469bac-81fe-4e4e-8d99-0cb50122c8b3.d8f8d3d2246c950639bde88935a6bcd4.jpeg?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF",
+    "category": "Grains & Rice",
+    "inStock": true,
+    "shortDescription": "Organic whole grain brown rice in a 2 lb bag.",
+    "detailDescription": "Healthy and hearty brown rice that keeps the nutritious bran layer intact. Ideal for side dishes, salads, or main meals. Cooks in approx 45 minutes and has a nutty flavour. Store in a cool, dry place.",
+    "inCart": false
+  },
+  {
+    "id": 4,
+    "itemName": "Whole Wheat Bread (500 g)",
+    "price": 2.99,
+    "rating": 4.4,
+    "image": "https://www.preparedfoodphotos.com/wp-content/uploads/BreadWheat001_ADL-2.jpg",
+    "category": "Bakery",
+    "inStock": true,
+    "shortDescription": "Soft whole wheat bread loaf, 500 g.",
+    "detailDescription": "Freshly baked whole wheat bread made from high-quality whole grain flour. Keeps you full longer, has natural fibre, and is perfect for sandwiches or toasting. Store in a bread box or freeze if keeping longer.",
+    "inCart": false
+  },
+  {
+    "id": 5,
+    "itemName": "Red Apples (1 kg)",
+    "price": 4.79,
+    "rating": 4.8,
+    "image": "https://tse2.mm.bing.net/th/id/OIP.uBf-DcR9kIu5JgHBBLZE9gHaHr?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
+    "category": "Fruit",
+    "inStock": true,
+    "shortDescription": "Crisp and juicy red apples, 1 kg pack.",
+    "detailDescription": "Pack of fresh red apples, hand-picked for crispness and flavour. Great for snacking, baking, or cooking. Rich in fibre and vitamin C. Store in the fridge for longer freshness, or at room temperature to ripen.",
+    "inCart": false
+  }
+]

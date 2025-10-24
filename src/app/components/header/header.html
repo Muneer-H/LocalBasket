@@ -1,0 +1,28 @@
+<header
+  class="min-h-20 grid grid-cols-3 items-center justify-between px-10 bg-green-800 text-white"
+>
+  <h1 class="text-3xl font-bold flex justify-center text-green-100">Local Basket</h1>
+  <div class="flex justify-center">
+    <input
+      class="rounded-l-md p-2 w-64 focus:outline-none text-white border border-green-700"
+      type="text"
+      placeholder="Search for groceries..."
+    />
+    <button class="bg-green-700 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-r-md">
+      <lucide-icon name="Search"></lucide-icon>
+    </button>
+  </div>
+  <nav class="flex gap-8">
+    <a class="text-white hover:text-green-200 hover:cursor-pointer" routerLink="/">Home</a>
+    <a class="text-white hover:text-green-200 hover:cursor-pointer" routerLink="/products"
+      >Products</a
+    >
+    <a class="text-white hover:text-green-200 hover:cursor-pointer relative" routerLink="/cart"
+      >Cart
+      <span
+        class="absolute text-white text-center text-sm top-[-5px] right-[-10px] font-semibold w-4 h-4 bg-green-500 rounded flex justify-center items-center"
+        >{{ cartItemsCount() }}</span
+      ></a
+    >
+  </nav>
+</header>

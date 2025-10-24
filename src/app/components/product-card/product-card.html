@@ -1,0 +1,44 @@
+<div
+  class="flex flex-col rounded-lg border border-gray-200 w-full h-108 shadow-xl items-center relative"
+>
+  <span
+    class="absolute z-10 top-[-10px] right-[-10px] w-10 h-10 rounded-full flex justify-center items-center bg-green-900 hover:cursor-pointer hover:bg-green-800 transition-colors duration-200"
+    (click)="openUpdateDialog()"
+    ><lucide-icon name="pencil" color="white"
+  /></span>
+  <div class="w-full overflow-hidden">
+    <img
+      [src]="product.image"
+      [alt]="product.itemName"
+      [routerLink]="'/product/' + product.id"
+      class="w-full h-[240px] object-cover mb-1 rounded-t-lg hover:scale-110 transition-transform duration-200 hover:brightness-80"
+    />
+  </div>
+  <div class="p-4 border-t w-full overflow-hidden">
+    <h2 class="text-xl font-medium mb-2">{{ product.itemName }}</h2>
+    <p class="text-gray-700 mb-2 leading-tight text-sm">{{ product.shortDescription }}</p>
+    <div class="flex justify-between items-center text-sm mb-2 h-fit">
+      <div class="text-slate-800">
+        Category: <span class="font-semibold text-black">{{ product.category }}</span>
+      </div>
+      <span class="text-xl font-bold text-green-900">${{ product.price }}</span>
+    </div>
+    @if(product.inCart){
+    <button
+      class="mt-2 bg-red-800 w-full hover:cursor-pointer text-white py-2 px-4 rounded hover:bg-red-700 flex items-center justify-center gap-2"
+      (click)="removeFromCart()"
+    >
+      <lucide-icon name="circle-x"></lucide-icon>
+      Remove from Cart
+    </button>
+    } @else {
+    <button
+      class="mt-2 bg-green-800 w-full hover:cursor-pointer text-white py-2 px-4 rounded hover:bg-green-700 flex items-center justify-center gap-2"
+      (click)="addToCart()"
+    >
+      <lucide-icon name="shopping-cart"></lucide-icon>
+      Add to Cart
+    </button>
+    }
+  </div>
+</div>

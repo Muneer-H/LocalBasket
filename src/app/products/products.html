@@ -1,0 +1,19 @@
+<div class="p-8">
+  <div class="flex flex-col justify-between items-center px-6 md:px-12 py-12 relative">
+    <app-page-heading title="Products" />
+    <button
+      routerLink="/addItem"
+      class="flex gap-1 items-center mb-4 w-[70%] md:w-48 xl:absolute xl:right-30 xl:top-13 bg-green-800 hover:cursor-pointer text-white text-lg font-semibold py-2 px-4 rounded hover:bg-green-700"
+    >
+      <lucide-icon name="plus"></lucide-icon> Add New Item
+    </button>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-6 md:px-12"
+    >
+      @for (product of data(); track $index) {
+      <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  </div>
+</div>
