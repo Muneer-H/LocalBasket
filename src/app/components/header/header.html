@@ -7,22 +7,40 @@
       class="rounded-l-md p-2 w-64 focus:outline-none text-white border border-green-700"
       type="text"
       placeholder="Search for groceries..."
+      id="searchInput"
+      [formControl]="searchTerm"
     />
     <button class="bg-green-700 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-r-md">
       <lucide-icon name="Search"></lucide-icon>
     </button>
   </div>
-  <nav class="flex gap-8">
-    <a class="text-white hover:text-green-200 hover:cursor-pointer" routerLink="/">Home</a>
-    <a class="text-white hover:text-green-200 hover:cursor-pointer" routerLink="/products"
-      >Products</a
-    >
-    <a class="text-white hover:text-green-200 hover:cursor-pointer relative" routerLink="/cart"
-      >Cart
-      <span
-        class="absolute text-white text-center text-sm top-[-5px] right-[-10px] font-semibold w-4 h-4 bg-green-500 rounded flex justify-center items-center"
-        >{{ cartItemsCount() }}</span
-      ></a
-    >
-  </nav>
+  <div class="flex justify-between items-center gap-6">
+    <nav class="flex gap-8">
+      <a class="text-white hover:text-green-200 hover:cursor-pointer" routerLink="/">Home</a>
+      <a class="text-white hover:text-green-200 hover:cursor-pointer" routerLink="/products"
+        >Products</a
+      >
+      <a class="text-white hover:text-green-200 hover:cursor-pointer relative" routerLink="/cart"
+        >Cart
+        <span
+          class="absolute text-white text-center text-sm top-[-5px] right-[-10px] font-semibold w-4 h-4 bg-green-500 rounded flex justify-center items-center"
+          >{{ cartItemsCount() }}</span
+        ></a
+      >
+    </nav>
+    @if (authService.currentUser()){
+      <div class="flex gap-4 items-center">
+        <span class="font-medium text-green-200">
+        {{ authService.currentUser()?.displayName }}
+        </span>
+        <button class="bg-green-600 px-3 py-2 w-24 rounded shadow-md hover:cursor-pointer hover:bg-green-700" (click)="handleLogout()">
+          Logout
+        </button>
+      </div>
+    }@else {
+      <button class="bg-green-600 px-3 py-2 w-24 rounded shadow-md hover:cursor-pointer hover:bg-green-700" (click)="handleLogin()">
+        Login
+      </button>
+    }
+  </div>
 </header>

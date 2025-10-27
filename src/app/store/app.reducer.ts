@@ -5,16 +5,25 @@ import { CartProduct, Product } from '../types/types';
 export interface State {
   products: Product[];
   cart: CartProduct[];
+  searchTerm?: string;
 }
 export const initialState: State = {
   products: [],
   cart: [],
+  searchTerm: '',
 };
 
 export const appReducer = createReducer(
   initialState,
+
+  on(Actions.loadCart, (state, { cart }) => {
+    return {
+      ...state,
+      cart: [...cart],
+    };
+  }),
+
   on(Actions.loadProducts, (state, { products }) => {
-    console.log('Loading products in reducer:', products);
     return {
       ...state,
       products: [...products],
@@ -47,6 +56,13 @@ export const appReducer = createReducer(
       ...state,
       products: state.products.map((p) => (p.id == productId ? { ...p, inCart: false } : p)),
       cart: state.cart.filter((item) => item.id !== productId),
+    };
+  }),
+  on(Actions.setSearchTerm, (state, { searchTerm }) => {
+    console.log(searchTerm)
+    return {
+      ...state,
+      searchTerm: searchTerm,
     };
   })
 );

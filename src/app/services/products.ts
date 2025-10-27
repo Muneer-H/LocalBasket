@@ -4,12 +4,13 @@ import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { CartProduct, Product } from '../types/types';
 import { Store } from '@ngrx/store';
 import { selectProducts } from '../store/app.selectors';
-
+import { Firestore, collectionData, collection, addDoc, updateDoc, doc, setDoc, getDoc, deleteDoc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Products {
+  firestore = inject(Firestore);
   http = inject(HttpClient);
   store = inject(Store);
   productsState = this.store.select(selectProducts);
@@ -17,25 +18,68 @@ export class Products {
   products$: Observable<Product[]> = this.products.asObservable();
 
   private cartItems: BehaviorSubject<Array<CartProduct>> = new BehaviorSubject<Array<CartProduct>>([]);
-  cartItems$ = this.cartItems.asObservable();
-
+  // cartItems$ = this.cartItems.asObservable();
+  
   constructor(){
-     this.http.get<Array<Product>>('/groceryItems.json').subscribe({
-      next: product => this.products.next(product),
-      error: err => console.error('Failed to fetch products', err)
+    const itemsRef = collection(this.firestore, 'products');
+    (collectionData(itemsRef, { idField: 'id' }) as Observable<Product[]>).subscribe(items => this.products.next(items));
+
+    const cartItemRef = collection(this.firestore, 'cart');
+    (collectionData(cartItemRef, { idField: 'id' }) as Observable<CartProduct[]>).subscribe(async items=>{
+      const resolvedCart = await Promise.all(
+        items.map(async (cartItem : any) => {
+          const productSnap = await getDoc(cartItem['product'])
+          const productData = productSnap.data() as Product;
+          return {
+            quantity: cartItem['quantity'],
+            ...productData,
+          } as CartProduct;
+        })
+      )  
+      this.cartItems.next(resolvedCart);
     });
   }
- 
+
+  getCartItems(): Observable<Array<CartProduct>> {
+    return this.cartItems.asObservable();
+  }
+
   getProducts(): Observable<Array<Product>> {
     return this.products$;
   }
    
+  addProduct(product: Product): Promise<void> {
+    const itemsRef = collection(this.firestore, 'products');
+    return setDoc(doc(itemsRef, product.id), product);
+  }
+
+  updateProduct(product: Product): Promise<void> {
+    const productDocRef = doc(this.firestore, `products/${product.id}`);
+    return updateDoc(productDocRef, { ...product });
+  }
+
   getProductByID(id: string): Observable<Product | undefined> {
     let product = this.productsState.pipe(
       filter(products => products.length > 0),
       map(products => products.find(p => p.id == id))
     )
-    console.log(product)
     return product
+  }
+
+  addToCart(productId: string, quantity: number): Promise<void> {
+    const cartRef = collection(this.firestore, 'cart');
+    const productDocRef = doc(this.firestore, `products/${productId}`);
+    updateDoc(productDocRef, { inCart: true });
+    return setDoc(doc(cartRef, productId), {
+      product: productDocRef,
+      quantity: quantity
+    });
+  }
+
+  removeFromCart(productId: string): Promise<void> {
+    const cartRef = collection(this.firestore, 'cart');
+    const productDocRef = doc(this.firestore, `products/${productId}`);
+    updateDoc(productDocRef, { inCart: false });
+    return deleteDoc(doc(cartRef, productId));
   }
 }

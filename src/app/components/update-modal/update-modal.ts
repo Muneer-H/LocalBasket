@@ -31,17 +31,34 @@ export class UpdateModal {
   dialogRef = inject(MatDialogRef<UpdateModal>);
   snackBar = inject(MatSnackBar);
 
-  handleUpdate(e: Event){
+  loading: boolean = false;
+
+  async handleUpdate(e: Event){
     e.preventDefault();
     const newItem: Product = {...this.product, itemName: this.itemName.value, shortDescription: this.itemDescription.value, detailDescription: this.detailDescription.value, price: parseFloat(this.itemPrice.value || '0'), category: this.itemCategory.value, rating: parseFloat(this.itemRating.value || '0'), image: this.itemImageURL.value};
-    this.store.dispatch(Actions.updateProduct({product: newItem}))
-    this.dialogRef.close();
-    this.snackBar.open("Item updated successfully!", 'Success', {
-      duration: 5000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-success']
-    });
+
+    try{
+      this.loading = true;
+      await this.productService.updateProduct(newItem);
+      this.store.dispatch(Actions.updateProduct({product: newItem}))
+      this.snackBar.open("Item updated successfully!", 'Success', {
+        duration: 5000,
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+    }catch(err){
+      this.snackBar.open("Error updating item. Please try again.", 'Error', {
+        duration: 5000,
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    }
+    finally{
+      this.dialogRef.close();
+      this.loading = false;
+    }
   }
 
 }

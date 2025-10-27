@@ -100,8 +100,9 @@
       ></textarea>
     </div>
     <button
-      class="bg-green-900 text-white font-semibold py-2 px-4 rounded mt-4 hover:bg-green-800 transition-colors duration-200 hover:cursor-pointer w-full"
+      class="bg-green-900 text-white font-semibold py-2 px-4 rounded mt-4 hover:bg-green-800 transition-colors duration-200 hover:cursor-pointer w-full disabled:opacity-50 disabled:cursor-not-allowed"
       type="submit"
+      [disabled]="loading"
     >
       Update Item
     </button>

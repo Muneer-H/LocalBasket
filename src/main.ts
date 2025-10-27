@@ -18,16 +18,25 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { provideStore } from '@ngrx/store';
 import { appReducer } from './app/store/app.reducer';
+import { environment } from './environments/environment';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import {provideFirestore, getFirestore} from '@angular/fire/firestore';
+import { provideAuth, getAuth } from '@angular/fire/auth';
 
 const appConfig: ApplicationConfig = {
   providers: [
-    importProvidersFrom(LucideAngularModule.pick({ Search, Store, Plus, Star, ShoppingCart, CircleX, Pencil })),
+    importProvidersFrom(
+      LucideAngularModule.pick({ Search, Store, Plus, Star, ShoppingCart, CircleX, Pencil })
+    ),
     provideRouter(routes),
     provideHttpClient(),
     importProvidersFrom(MatSnackBarModule),
     importProvidersFrom(MatDialogModule),
-    provideStore({app: appReducer})
-],
+    provideStore({ app: appReducer }),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideFirestore(() => getFirestore()),
+    provideAuth(() => getAuth()),
+  ],
 };
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));

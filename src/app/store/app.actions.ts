@@ -1,5 +1,10 @@
 import { createAction, props } from '@ngrx/store';
-import { type Product } from '../types/types';
+import { CartProduct, type Product } from '../types/types';
+
+export const loadCart = createAction(
+  '[Cart] Load Cart',
+  props<{ cart: CartProduct[] }>()
+);
 
 export const loadProducts = createAction(
   '[Product] Load Products',
@@ -16,3 +21,8 @@ export const addToCart = createAction(
   props<{productId: string, quantity: number}>()
 );
 export const removeFromCart = createAction('[Cart] Remove From Cart', props<{productId: string}>());
+
+export const setSearchTerm = createAction(
+  '[Search] Set Search Term',
+  props<{ searchTerm: string }>()
+);

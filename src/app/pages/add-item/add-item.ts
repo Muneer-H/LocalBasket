@@ -6,8 +6,7 @@ import { Products as ProductService } from '../../services/products';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store } from '@ngrx/store';
-import * as Actions from './../../store/app.actions'
-
+import * as Actions from './../../store/app.actions';
 
 @Component({
   selector: 'app-add-item',
@@ -16,7 +15,7 @@ import * as Actions from './../../store/app.actions'
   styleUrl: './add-item.scss',
 })
 export class AddItem {
-  store = inject(Store)
+  store = inject(Store);
   snackBar = inject(MatSnackBar);
   private router: Router = inject(Router);
   productService = inject(ProductService);
@@ -27,8 +26,8 @@ export class AddItem {
   itemRating: FormControl = new FormControl('');
   itemImageURL: FormControl = new FormControl('');
   detailDescription: FormControl = new FormControl('');
-
-  handleSubmit(e: Event) {
+  loading: boolean = false;
+  async handleSubmit(e: Event) {
     e.preventDefault();
     const newItem: Product = {
       id: Date.now().toString(),
@@ -40,26 +39,45 @@ export class AddItem {
       category: this.itemCategory.value,
       rating: parseFloat(this.itemRating.value || '0'),
       image: this.itemImageURL.value,
-      inCart: false
+      inCart: false,
     };
-    if(!this.itemName.value || !this.itemDescription.value || !this.detailDescription.value || !this.itemPrice.value || !this.itemCategory.value || !this.itemRating.value || !this.itemImageURL.value) {
-      this.snackBar.open("Fill all fields!", 'Error', {
-
-          duration: 5000,
-          horizontalPosition: 'right',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-error']
-        });
-    }
-    else{
-      this.store.dispatch(Actions.addProduct({product: newItem}))
-      this.router.navigate(['/products']);
-      this.snackBar.open("Item added successfully!", 'Success', {
+    if (
+      !this.itemName.value ||
+      !this.itemDescription.value ||
+      !this.detailDescription.value ||
+      !this.itemPrice.value ||
+      !this.itemCategory.value ||
+      !this.itemRating.value ||
+      !this.itemImageURL.value
+    ) {
+      this.snackBar.open('Fill all fields!', 'Error', {
         duration: 5000,
         horizontalPosition: 'right',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success']
+        panelClass: ['snackbar-error'],
       });
+    } else {
+      try {
+        this.loading = true;
+        await this.productService.addProduct(newItem);
+        this.store.dispatch(Actions.addProduct({ product: newItem }));
+        this.router.navigate(['/products']);
+        this.snackBar.open('Item added successfully!', 'Success', {
+          duration: 5000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+      } catch (error) {
+        this.snackBar.open('Failed to add item!', 'Error', {
+          duration: 5000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      } finally {
+        this.loading = false;
+      }
     }
   }
 }

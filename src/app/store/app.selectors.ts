@@ -6,6 +6,7 @@ export interface AppState {
     app:{
         products: Product[];
         cart: CartProduct[];
+        searchTerm: string;
     }
 }
 
@@ -15,3 +16,4 @@ export const selectCartItemsCount = createSelector(
   selectCart,
   (cart) => cart.length
 );
+export const searchTermSelector = (state: AppState) => state.app.searchTerm || '';
