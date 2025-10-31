@@ -94,12 +94,10 @@ export class ProductEffects {
   loadCart$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ActionsList.loadCartStart),
-      mergeMap(() =>
-        this.productService.getCartItems().pipe(
-          map((cart) => ActionsList.loadCartSuccess({ cart })),
-          catchError((error) => of(ActionsList.loadCartFailure({ error })))
-        )
-      )
+      mergeMap(() => this.productService.getCartItems().pipe(
+        map((cart) => ActionsList.loadCartSuccess({ cart })),
+        catchError((error) => of(ActionsList.loadCartFailure({ error })))
+      ))
     )
   );
 

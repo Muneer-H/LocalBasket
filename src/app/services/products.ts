@@ -22,23 +22,27 @@ export class Products {
 
   user: User & { id?: string } | null = null;
   private cartItems: BehaviorSubject<Array<CartProduct>> = new BehaviorSubject<Array<CartProduct>>([]);
-  cartItems$ = this.cartItems.asObservable();
+  cartItems$ : Observable<Array<CartProduct>> = this.cartItems.asObservable();
 
   constructor(){
     const itemsRef = collection(this.firestore, 'products');
     (collectionData(itemsRef, { idField: 'id' }) as Observable<Product[]>).subscribe(items => this.products.next(items));
 
     effect(()=>{
+      console.log("Fetching cart for user change");
       const currentUser = this.authService.currentUser(); // reactive signal
       this.user = currentUser;
+      console.log(this.user)
        this.cartItems.next([]);
       if(!this.user){
         return ;
       }
-        console.log(this.user, this.user?.uid || this.user?.id);
-        const cartItemRef = collection(this.firestore, `users/${this.user?.uid || this.user?.id}/cart`);
-        const sub = (collectionData(cartItemRef, { idField: 'id' }) as Observable<CartProduct[]>).subscribe(async items=>{
-          console.log('Cart items:', items);
+      const cartItemRef = collection(this.firestore, `users/${this.user?.uid || this.user?.id}/cart`);
+      const sub = (collectionData(cartItemRef, { idField: 'id' }) as Observable<CartProduct[]>).subscribe(async items=>{
+          if(!this.user){
+            this.cartItems.next([]);
+            return;
+          }
           const resolvedCart = await Promise.all(
             items.map(async (cartItem : any) => {
               const productSnap = await getDoc(cartItem['product'])
@@ -49,7 +53,6 @@ export class Products {
               } as CartProduct;
             })
           )  
-          console.log(resolvedCart)
           this.cartItems.next(resolvedCart);
         });
       return () => sub.unsubscribe();

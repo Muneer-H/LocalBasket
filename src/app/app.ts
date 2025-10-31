@@ -23,6 +23,5 @@ export class App {
   protected readonly title = signal('e-commerce-grocery-store');
   ngOnInit(): void {
     this.store.dispatch(Actions.loadProductsStart());
-    this.store.dispatch(Actions.loadCartStart());
   }
 }

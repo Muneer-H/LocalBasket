@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Hero } from '../../components/hero/hero';
 import { PageHeading } from '../../components/page-heading/page-heading';
-
+import { Store } from '@ngrx/store';
+import { Products as ProductService } from '../../services/products';
+import * as Actions from '../../store/app.actions';
 @Component({
   selector: 'app-home',
   imports: [Hero, PageHeading],
@@ -51,5 +53,8 @@ export class Home {
       imageURL: 'https://images.stockcake.com/public/e/8/e/e8eaaa9c-63de-4629-ac68-d4481806f68c_large/modern-kitchen-tools-stockcake.jpg',
     }
   ];
-  
+  store = inject(Store);
+  ngOnInit(){
+    this.store.dispatch(Actions.loadCartStart());
+  }
 }
