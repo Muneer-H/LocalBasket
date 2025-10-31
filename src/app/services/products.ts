@@ -1,15 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 import { BehaviorSubject, filter, map, Observable } from 'rxjs';
 import { CartProduct, Product } from '../types/types';
 import { Store } from '@ngrx/store';
 import { selectProducts } from '../store/app.selectors';
 import { Firestore, collectionData, collection, addDoc, updateDoc, doc, setDoc, getDoc, deleteDoc } from '@angular/fire/firestore';
+import { AuthService } from './auth';
+import { User } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Products {
+  authService = inject(AuthService);
   firestore = inject(Firestore);
   http = inject(HttpClient);
   store = inject(Store);
@@ -17,31 +20,47 @@ export class Products {
   private products: BehaviorSubject<Product[]> = new BehaviorSubject<Product[]>([]);
   products$: Observable<Product[]> = this.products.asObservable();
 
+  user: User & { id?: string } | null = null;
   private cartItems: BehaviorSubject<Array<CartProduct>> = new BehaviorSubject<Array<CartProduct>>([]);
-  // cartItems$ = this.cartItems.asObservable();
-  
+  cartItems$ = this.cartItems.asObservable();
+
   constructor(){
     const itemsRef = collection(this.firestore, 'products');
     (collectionData(itemsRef, { idField: 'id' }) as Observable<Product[]>).subscribe(items => this.products.next(items));
 
-    const cartItemRef = collection(this.firestore, 'cart');
-    (collectionData(cartItemRef, { idField: 'id' }) as Observable<CartProduct[]>).subscribe(async items=>{
-      const resolvedCart = await Promise.all(
-        items.map(async (cartItem : any) => {
-          const productSnap = await getDoc(cartItem['product'])
-          const productData = productSnap.data() as Product;
-          return {
-            quantity: cartItem['quantity'],
-            ...productData,
-          } as CartProduct;
-        })
-      )  
-      this.cartItems.next(resolvedCart);
-    });
+    effect(()=>{
+      const currentUser = this.authService.currentUser(); // reactive signal
+      this.user = currentUser;
+       this.cartItems.next([]);
+      if(!this.user){
+        return ;
+      }
+        console.log(this.user, this.user?.uid || this.user?.id);
+        const cartItemRef = collection(this.firestore, `users/${this.user?.uid || this.user?.id}/cart`);
+        const sub = (collectionData(cartItemRef, { idField: 'id' }) as Observable<CartProduct[]>).subscribe(async items=>{
+          console.log('Cart items:', items);
+          const resolvedCart = await Promise.all(
+            items.map(async (cartItem : any) => {
+              const productSnap = await getDoc(cartItem['product'])
+              const productData = productSnap.data() as Product;
+              return {
+                quantity: cartItem['quantity'],
+                ...productData,
+              } as CartProduct;
+            })
+          )  
+          console.log(resolvedCart)
+          this.cartItems.next(resolvedCart);
+        });
+      return () => sub.unsubscribe();
+    })
   }
 
   getCartItems(): Observable<Array<CartProduct>> {
-    return this.cartItems.asObservable();
+    if(!this.user) {
+      throw new Error('User not authenticated');
+    }
+    return this.cartItems$;
   }
 
   getProducts(): Observable<Array<Product>> {
@@ -67,9 +86,8 @@ export class Products {
   }
 
   addToCart(productId: string, quantity: number): Promise<void> {
-    const cartRef = collection(this.firestore, 'cart');
+    const cartRef = collection(this.firestore, 'users/' + (this.user ? this.user.uid || this.user.id : '') + '/cart');
     const productDocRef = doc(this.firestore, `products/${productId}`);
-    updateDoc(productDocRef, { inCart: true });
     return setDoc(doc(cartRef, productId), {
       product: productDocRef,
       quantity: quantity
@@ -77,9 +95,7 @@ export class Products {
   }
 
   removeFromCart(productId: string): Promise<void> {
-    const cartRef = collection(this.firestore, 'cart');
-    const productDocRef = doc(this.firestore, `products/${productId}`);
-    updateDoc(productDocRef, { inCart: false });
+    const cartRef = collection(this.firestore, 'users/' + (this.user ? this.user.uid || this.user.id : '') + '/cart');
     return deleteDoc(doc(cartRef, productId));
   }
 }

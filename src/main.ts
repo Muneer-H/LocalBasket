@@ -16,12 +16,15 @@ import { routes } from './app/app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { provideStore } from '@ngrx/store';
 import { appReducer } from './app/store/app.reducer';
 import { environment } from './environments/environment';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import {provideFirestore, getFirestore} from '@angular/fire/firestore';
 import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideEffects } from '@ngrx/effects';
+import { ProductEffects } from './app/store/app.effects';
 
 const appConfig: ApplicationConfig = {
   providers: [
@@ -32,10 +35,12 @@ const appConfig: ApplicationConfig = {
     provideHttpClient(),
     importProvidersFrom(MatSnackBarModule),
     importProvidersFrom(MatDialogModule),
+    importProvidersFrom(MatProgressSpinnerModule),
     provideStore({ app: appReducer }),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
+    provideEffects([ProductEffects])
   ],
 };
 

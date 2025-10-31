@@ -1,11 +1,13 @@
 <div
   class="flex flex-col rounded-lg border border-gray-200 w-full h-108 shadow-xl items-center relative"
 >
-  <span
-    class="absolute z-10 top-[-10px] right-[-10px] w-10 h-10 rounded-full flex justify-center items-center bg-green-900 hover:cursor-pointer hover:bg-green-800 transition-colors duration-200"
-    (click)="openUpdateDialog()"
-    ><lucide-icon name="pencil" color="white"
-  /></span>
+  @if(isAdmin){
+    <span
+      class="absolute z-10 top-[-10px] right-[-10px] w-10 h-10 rounded-full flex justify-center items-center bg-green-900 hover:cursor-pointer hover:bg-green-800 transition-colors duration-200"
+      (click)="openUpdateDialog()"
+      ><lucide-icon name="pencil" color="white"
+    /></span>
+  }
   <div class="w-full overflow-hidden">
     <img
       [src]="product.image"
@@ -25,16 +27,18 @@
     </div>
     @if(product.inCart){
     <button
-      class="mt-2 bg-red-800 w-full hover:cursor-pointer text-white py-2 px-4 rounded hover:bg-red-700 flex items-center justify-center gap-2"
+      class="mt-2 bg-red-800 w-full hover:cursor-pointer text-white py-2 px-4 rounded hover:bg-red-700 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       (click)="removeFromCart()"
+      [disabled]="removeLoading()"
     >
       <lucide-icon name="circle-x"></lucide-icon>
       Remove from Cart
     </button>
     } @else {
     <button
-      class="mt-2 bg-green-800 w-full hover:cursor-pointer text-white py-2 px-4 rounded hover:bg-green-700 flex items-center justify-center gap-2"
+      class="mt-2 bg-green-800 w-full hover:cursor-pointer text-white py-2 px-4 rounded hover:bg-green-700 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       (click)="addToCart()"
+      [disabled]="addLoading()"
     >
       <lucide-icon name="shopping-cart"></lucide-icon>
       Add to Cart

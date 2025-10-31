@@ -29,18 +29,25 @@
       >
     </nav>
     @if (authService.currentUser()){
-      <div class="flex gap-4 items-center">
-        <span class="font-medium text-green-200">
-        {{ authService.currentUser()?.displayName }}
-        </span>
-        <button class="bg-green-600 px-3 py-2 w-24 rounded shadow-md hover:cursor-pointer hover:bg-green-700" (click)="handleLogout()">
-          Logout
-        </button>
+    <div class="flex gap-4 items-center justify-center">
+      <div class="text-sm text-green-200 text-right flex flex-col justify-center items-end">
+        <p class="font-bold text-lg">{{ authService.currentUser()?.displayName }}</p>
+        {{ authService.currentUser()?.email }}
       </div>
-    }@else {
-      <button class="bg-green-600 px-3 py-2 w-24 rounded shadow-md hover:cursor-pointer hover:bg-green-700" (click)="handleLogin()">
-        Login
+      <button
+        class="bg-green-600 px-3 py-2 w-24 rounded shadow-md hover:cursor-pointer hover:bg-green-700"
+        (click)="handleLogout()"
+      >
+        Logout
       </button>
+    </div>
+    }@else {
+    <button
+      class="bg-green-600 px-3 py-2 w-24 rounded shadow-md hover:cursor-pointer hover:bg-green-700"
+      (click)="handleLogin()"
+    >
+      Login
+    </button>
     }
   </div>
 </header>

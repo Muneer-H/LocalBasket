@@ -1,3 +1,4 @@
+
 <div class="flex flex-col justify-between items-center px-6 md:px-12 py-6">
   <app-page-heading title="Add New Item"></app-page-heading>
   <form
@@ -104,7 +105,7 @@
     <button
       class="bg-green-900 text-white font-semibold py-2 px-4 rounded mt-4 hover:bg-green-800 transition-colors duration-200 hover:cursor-pointer w-full disabled:opacity-50 disabled:cursor-not-allowed"
       type="submit"
-      [disabled]="loading"
+      [disabled]="loading()"
     >
       Add Item
     </button>

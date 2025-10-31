@@ -5,19 +5,30 @@ import { ProductCard } from '../../components/product-card/product-card';
 import { RouterLink } from '@angular/router';
 import { PageHeading } from '../../components/page-heading/page-heading';
 import { Store } from '@ngrx/store';
-import { searchTermSelector, selectProducts } from '../../store/app.selectors';
+import { searchTermSelector, selectProductLoading, selectProducts } from '../../store/app.selectors';
 import { combineLatest, map } from 'rxjs';
+import { AuthService } from '../../services/auth';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-products',
-  imports: [LucideAngularModule, ProductCard, RouterLink, PageHeading],
+  imports: [LucideAngularModule, ProductCard, RouterLink, PageHeading, MatProgressSpinner],
   templateUrl: './products.html',
   styleUrl: './products.scss',
 })
 export class Products implements OnInit {
+  private readonly authService = inject(AuthService);
+  isAdmin = this.authService.isAdmin;
   store = inject(Store);
   productsState = this.store.select(selectProducts);
   searchTermState = this.store.select(searchTermSelector);
+  loading = signal<boolean>(true);
+  productsLoading = this.store.select(selectProductLoading);
+  constructor() {
+    this.productsLoading.subscribe((loading) => {
+      this.loading.set(loading);
+    });
+  }
   data = signal<Array<Product>>([]);
   ngOnInit(): void {
     combineLatest([this.productsState, this.searchTermState]).pipe(

@@ -19,7 +19,7 @@ export class CartItem {
   async removeItem() {
     try {
       await this.productService.removeFromCart(this.item.id);
-      this.store.dispatch(Actions.removeFromCart({ productId: this.item.id }));
+      // this.store.dispatch(Actions.removeFromCart({ productId: this.item.id }));
       this.snackBar.open('Item removed from cart!', 'Success', {
         duration: 5000,
         horizontalPosition: 'right',

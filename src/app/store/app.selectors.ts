@@ -7,6 +7,11 @@ export interface AppState {
         products: Product[];
         cart: CartProduct[];
         searchTerm: string;
+        loading: boolean;
+        error: string | null;
+        loadingAddProduct: boolean;
+        loadingAddToCart: boolean;
+        loadingRemoveFromCart: boolean;
     }
 }
 
@@ -17,3 +22,7 @@ export const selectCartItemsCount = createSelector(
   (cart) => cart.length
 );
 export const searchTermSelector = (state: AppState) => state.app.searchTerm || '';
+export const selectProductLoading = (state: AppState) => state.app.loading;
+export const selectAddProductLoading = (state: AppState) => state.app.loadingAddProduct;
+export const selectAddToCartLoading = (state: AppState) => state.app.loadingAddToCart;
+export const selectRemoveFromCartLoading = (state: AppState) => state.app.loadingRemoveFromCart;

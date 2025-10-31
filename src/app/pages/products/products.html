@@ -1,5 +1,6 @@
 <div class="p-8">
   <div class="flex flex-col justify-between items-center px-6 md:px-12 py-12 relative">
+    @if(isAdmin()) {
     <app-page-heading title="Products" />
     <button
       routerLink="/addItem"
@@ -7,13 +8,24 @@
     >
       <lucide-icon name="plus"></lucide-icon> Add New Item
     </button>
+    } @if(loading()){
+    <div class="flex justify-center items-center h-96 w-full">
+      <mat-progress-spinner
+        mode="indeterminate"
+        diameter="50"
+        strokeWidth="5"
+        color="primary"
+      ></mat-progress-spinner>
+    </div>
+    }@else {
 
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-6 md:px-12"
     >
       @for (product of data(); track $index) {
-      <app-product-card [product]="product"></app-product-card>
+      <app-product-card [isAdmin]="isAdmin()" [product]="product"></app-product-card>
       }
     </div>
+    }
   </div>
 </div>

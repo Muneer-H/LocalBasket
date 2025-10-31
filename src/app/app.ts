@@ -22,11 +22,7 @@ export class App {
   store = inject(Store);
   protected readonly title = signal('e-commerce-grocery-store');
   ngOnInit(): void {
-    this.productService.getProducts().subscribe(items => {
-      this.store.dispatch(Actions.loadProducts({ products: items }));
-    });
-    this.productService.getCartItems().subscribe(cartItems => {
-      this.store.dispatch(Actions.loadCart({ cart: cartItems }));
-    });
+    this.store.dispatch(Actions.loadProductsStart());
+    this.store.dispatch(Actions.loadCartStart());
   }
 }

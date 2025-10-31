@@ -1,12 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { PageHeading } from '../../components/page-heading/page-heading';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Product } from '../../types/types';
-import { Products as ProductService } from '../../services/products';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Store } from '@ngrx/store';
+import { Store, ActionsSubject } from '@ngrx/store';
 import * as Actions from './../../store/app.actions';
+import { AuthService } from '../../services/auth';
+import { Unauthorized } from '../unauthorized/unauthorized';
+import { selectAddProductLoading } from '../../store/app.selectors';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-add-item',
@@ -15,10 +18,11 @@ import * as Actions from './../../store/app.actions';
   styleUrl: './add-item.scss',
 })
 export class AddItem {
+  authService = inject(AuthService);
   store = inject(Store);
+  actionsSubject = inject(ActionsSubject);
+  productLoading = this.store.select(selectAddProductLoading);
   snackBar = inject(MatSnackBar);
-  private router: Router = inject(Router);
-  productService = inject(ProductService);
   itemName: FormControl = new FormControl('');
   itemDescription: FormControl = new FormControl('');
   itemPrice: FormControl = new FormControl('');
@@ -26,8 +30,15 @@ export class AddItem {
   itemRating: FormControl = new FormControl('');
   itemImageURL: FormControl = new FormControl('');
   detailDescription: FormControl = new FormControl('');
-  loading: boolean = false;
-  async handleSubmit(e: Event) {
+  loading = signal<boolean>(false);
+
+  constructor() {
+    this.productLoading.subscribe((loading) => {
+      this.loading.set(loading);
+    });
+  }
+
+  handleSubmit(e: Event) {
     e.preventDefault();
     const newItem: Product = {
       id: Date.now().toString(),
@@ -57,27 +68,7 @@ export class AddItem {
         panelClass: ['snackbar-error'],
       });
     } else {
-      try {
-        this.loading = true;
-        await this.productService.addProduct(newItem);
-        this.store.dispatch(Actions.addProduct({ product: newItem }));
-        this.router.navigate(['/products']);
-        this.snackBar.open('Item added successfully!', 'Success', {
-          duration: 5000,
-          horizontalPosition: 'right',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-      } catch (error) {
-        this.snackBar.open('Failed to add item!', 'Error', {
-          duration: 5000,
-          horizontalPosition: 'right',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-error'],
-        });
-      } finally {
-        this.loading = false;
-      }
+      this.store.dispatch(Actions.addProductStart({ product: newItem }));
     }
   }
 }

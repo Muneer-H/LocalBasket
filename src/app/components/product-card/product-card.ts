@@ -1,71 +1,72 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, signal } from '@angular/core';
 import { Product } from '../../types/types';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateModal } from '../update-modal/update-modal';
-import * as Actions from './../../store/app.actions'
-import { Store } from '@ngrx/store';
-import { Products as ProductsService} from '../../services/products';
+import * as Actions from './../../store/app.actions';
+import { ActionsSubject, Store } from '@ngrx/store';
+import { Products as ProductsService } from '../../services/products';
+import {
+  selectAddProductLoading,
+  selectProductLoading,
+  selectRemoveFromCartLoading,
+} from '../../store/app.selectors';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-product-card',
   imports: [RouterLink, LucideAngularModule],
   templateUrl: './product-card.html',
-  styleUrl: './product-card.scss'
+  styleUrl: './product-card.scss',
 })
 export class ProductCard {
   productService = inject(ProductsService);
-  store = inject(Store)
+  store = inject(Store);
   dialog = inject(MatDialog);
   snackbar = inject(MatSnackBar);
   @Input() product!: Product;
+  @Input() isAdmin: boolean = false;
+  actionSubject = inject(ActionsSubject);
+  addLoading = signal<boolean>(false);
+  removeLoading = signal<boolean>(false);
+  addToCartLoading = this.store.select(selectAddProductLoading);
+  removeFromCartLoading = this.store.select(selectRemoveFromCartLoading);
+  authService = inject(AuthService);
+  user = this.authService.currentUser();
 
-  async addToCart(){
-    try{
-      await this.productService.addToCart(this.product.id, 1);
-      this.store.dispatch(Actions.addToCart({productId: this.product.id, quantity: 1}))
-      this.snackbar.open("Item added to cart!", 'Success', {
-        duration: 5000,
-        horizontalPosition: 'right',
+  constructor() {
+    this.addToCartLoading.subscribe((loading) => {
+      this.addLoading.set(loading);
+    });
+    this.removeFromCartLoading.subscribe((loading) => {
+      this.removeLoading.set(loading);
+    });
+  }
+
+  addToCart() {
+    if (this.user) {
+      this.store.dispatch(Actions.addToCartStart({ productId: this.product.id, quantity: 1 }));
+    } else {
+      this.snackbar.open('Please log in to add items to your cart.', 'Close', {
+        duration: 3000,
         verticalPosition: 'top',
-        panelClass: ['snackbar-success']
-      });
-    }catch(err){
-      this.snackbar.open("Error adding item to cart. Please try again.", 'Error', {
-        duration: 5000,
         horizontalPosition: 'right',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
+        panelClass: ['snackbar-error'],
       });
     }
   }
-  async removeFromCart(){
-    try{
-      await this.productService.removeFromCart(this.product.id);
-      this.store.dispatch(Actions.removeFromCart({productId: this.product.id}))
-      this.snackbar.open("Item removed from cart!", 'Success', {
-        duration: 5000,
-        horizontalPosition: 'right',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success']
-      });
-    }catch(err){
-      this.snackbar.open("Error removing item from cart. Please try again.", 'Error', {
-        duration: 5000,
-        horizontalPosition: 'right',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
-      });
-    }
+
+  removeFromCart() {
+    this.store.dispatch(Actions.removeFromCartStart({ productId: this.product.id }));
   }
-  openUpdateDialog(){
+  openUpdateDialog() {
     this.dialog.open(UpdateModal, {
       width: '600px',
       data: { product: this.product },
       height: '620px',
-      position: { top: '50px' }
+      position: { top: '50px' },
     });
   }
 }
