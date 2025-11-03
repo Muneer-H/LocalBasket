@@ -1,12 +1,12 @@
 import { Component, inject, NgModule, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { Products as ProductsService } from '../../services/products';
 import { Store } from '@ngrx/store';
 import { selectCartItemsCount } from '../../store/app.selectors';
 import * as Actions from '../../store/app.actions';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 import { AuthService } from '../../services/auth';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -24,6 +24,9 @@ export class Header {
   authService = inject(AuthService);
   router = inject(Router);
   snackbar = inject(MatSnackBar)
+  searchBar = signal<boolean>(false);
+
+  
 
   cartItemsCount = signal<number>(0);
   itemCountNgrx = this.store.select(selectCartItemsCount);
@@ -37,6 +40,11 @@ export class Header {
 
     this.itemCountNgrx.subscribe((count) => {
       this.cartItemsCount.set(count);
+    });
+    this.router.events
+    .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+    .subscribe((event) => {
+      this.searchBar.set(event.urlAfterRedirects.includes('/products'));
     });
   }
   handleLogin() {

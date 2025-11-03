@@ -25,7 +25,7 @@
       </div>
       <span class="text-xl font-bold text-green-900">${{ product.price }}</span>
     </div>
-    @if(product.inCart){
+    @if(inCart()){
     <button
       class="mt-2 bg-red-800 w-full hover:cursor-pointer text-white py-2 px-4 rounded hover:bg-red-700 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       (click)="removeFromCart()"

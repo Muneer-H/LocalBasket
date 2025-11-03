@@ -38,9 +38,10 @@ export class Products {
         return ;
       }
       const cartItemRef = collection(this.firestore, `users/${this.user?.uid || this.user?.id}/cart`);
-      const sub = (collectionData(cartItemRef, { idField: 'id' }) as Observable<CartProduct[]>).subscribe(async items=>{
+      const sub = (collectionData(cartItemRef) as Observable<CartProduct[]>).subscribe(async items=>{
           if(!this.user){
             this.cartItems.next([]);
+            sub.unsubscribe();
             return;
           }
           const resolvedCart = await Promise.all(
@@ -53,6 +54,7 @@ export class Products {
               } as CartProduct;
             })
           )  
+          console.log("Resolved Cart:", resolvedCart);
           this.cartItems.next(resolvedCart);
         });
       return () => sub.unsubscribe();

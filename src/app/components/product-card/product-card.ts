@@ -10,7 +10,9 @@ import { ActionsSubject, Store } from '@ngrx/store';
 import { Products as ProductsService } from '../../services/products';
 import {
   selectAddProductLoading,
+  selectCart,
   selectProductLoading,
+  selectProducts,
   selectRemoveFromCartLoading,
 } from '../../store/app.selectors';
 import { AuthService } from '../../services/auth';
@@ -35,14 +37,20 @@ export class ProductCard {
   removeFromCartLoading = this.store.select(selectRemoveFromCartLoading);
   authService = inject(AuthService);
   user = this.authService.currentUser();
-
-  constructor() {
+  cartsState = this.store.select(selectCart);
+  inCart = signal<boolean>(false);
+  ngOnInit() {
     this.addToCartLoading.subscribe((loading) => {
       this.addLoading.set(loading);
     });
     this.removeFromCartLoading.subscribe((loading) => {
       this.removeLoading.set(loading);
     });
+
+    this.cartsState.subscribe((cart) => {
+      this.inCart.set(cart.some(item => item.id === this.product.id));
+    });
+
   }
 
   addToCart() {
